@@ -3,55 +3,53 @@ import cors from 'cors';
 import path from 'path';
 import morgan from 'morgan';
 import mongoose from 'mongoose';
+import routes from './routes';
 
-// initialize
+// Initialize the Express application
 const app = express();
 
-// enable/disable cross origin resource sharing if necessary
+// Enable CORS if necessary
 app.use(cors());
 
-// enable/disable http request logging
+// Enable HTTP request logging
 app.use(morgan('dev'));
 
-// enable only if you want templating
+// Set the view engine to ejs if using templating
 app.set('view engine', 'ejs');
 
-// enable only if you want static assets from folder static
+// Serve static assets from the 'static' folder
 app.use(express.static('static'));
 
-// this just allows us to render ejs from the ../app/views directory
+// Set the views directory
 app.set('views', path.join(__dirname, '../src/views'));
 
-// enable json message body for posting data to API
+// Enable URL-encoded data and JSON data parsing in request bodies
 app.use(express.urlencoded({ extended: true }));
-app.use(express.json()); // To parse the incoming requests with JSON payloads
+app.use(express.json());
 
-// additional init stuff should go before hitting the routing
-// Connect to MongoDB
-const mongoURI = process.env.MONGODB_URI || 'mongodb://localhost/kahootClone';
-mongoose.connect(mongoURI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-})
-  .then(() => { return console.log('MongoDB connected successfully.'); })
-  .catch((err) => { return console.log('MongoDB connection error:', err); });
+// Apply routes
+app.use('', routes);
 
-// default index route
-app.get('/', (req, res) => {
-  res.send('hi');
-});
-
-// START THE SERVER
-// =============================================================================
+// Start the server asynchronously
 async function startServer() {
   try {
-    const port = process.env.PORT || 9090;
-    app.listen(port);
+    // Connect to MongoDB
+    const mongoURI = process.env.MONGODB_URI || 'mongodb://localhost/kahootAPI';
+    await mongoose.connect(mongoURI, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
+    console.log(`Mongoose connected to: ${mongoURI}`);
 
-    console.log(`Listening on port ${port}`);
+    // Start listening on the configured port
+    const port = process.env.PORT || 9090;
+    app.listen(port, () => {
+      console.log(`Server listening on port ${port}`);
+    });
   } catch (error) {
-    console.error(error);
+    console.error('Failed to connect to MongoDB and start server:', error);
   }
 }
 
+// Call the startServer function to launch the app
 startServer();

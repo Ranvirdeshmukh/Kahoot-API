@@ -5,7 +5,7 @@
   "author": "CS52",
   "main": "src/server.js",
   "scripts": {
-    "test": "eslint src",
+    "test": "cypress run",
     "start": "nodemon src/server.js --exec babel-node",
     "babel-start": "babel-node src/server.js",
     "build": "babel src -d dist",
@@ -33,6 +33,7 @@
   },
   "devDependencies": {
     "@babel/eslint-parser": "^7.24.1",
+    "cypress": "^13.9.0",
     "eslint": "^8.57.0",
     "eslint-config-airbnb": "^19.0.4",
     "eslint-plugin-import": "^2.29.1",
