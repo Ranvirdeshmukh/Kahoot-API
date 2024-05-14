@@ -1,4 +1,3 @@
-// src/controllers/submission_controller.js
 import Submission from '../models/submission_model';
 
 export async function submit(roomId, player, questionNumber, response, correct) {
@@ -10,19 +9,30 @@ export async function submit(roomId, player, questionNumber, response, correct) 
     correct,
   });
   await submission.save();
-  return submission; // Directly return the promise, not using `return await`
+  return submission;
 }
 
 export async function countSubmissions(roomId, questionNumber) {
-  return Submission.countDocuments({ roomId, questionNumber }); // Remove `await` when returning
+  return Submission.countDocuments({ roomId, questionNumber });
 }
 
+// computes scores for all players in a room
 export async function getScores(roomId, currentQuestionNumber, players) {
   const submissions = await Submission.find({ roomId });
+
   const scores = {};
   players.forEach((player) => {
-    // Calculating scores based on submissions
-    scores[player] = submissions.filter((sub) => { return sub.player === player && sub.correct; }).length;
+    scores[player] = 0;
   });
-  return scores; // Return scores directly since no promises are involved in this return
+
+  submissions.forEach((submission) => {
+    // don't count unfinished rounds
+    if (submission.questionNumber < currentQuestionNumber && submission.correct) {
+      scores[submission.player] += 1;
+    }
+  });
+
+  const sorted = Object.entries(scores).sort((a, b) => { return b[1] - a[1]; });
+
+  return sorted;
 }

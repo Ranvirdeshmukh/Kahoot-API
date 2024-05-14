@@ -3,53 +3,22 @@ import * as RoomController from './controllers/room_controller';
 
 const router = express.Router();
 
-// Setup routes
 // create a room - admin
-router.post('/rooms', async (req, res) => {
-  const roomInitInfo = req.body;
+router.post('/rooms', RoomController.createRoom);
 
-  try {
-    const result = await RoomController.createRoom(roomInitInfo);
-    return res.json(result);
-  } catch (error) {
-    console.log(error);
-    return res.status(422).json({ error: error.message });
-  }
-});
-router.get('/rooms/:id', async (req, res) => {
-  try {
-    const result = await RoomController.getState(req);
-    return result.json(result);
-  } catch (error) {
-    return res.status(422).json({ error: error.message });
-  }
-});
+// get room state
+router.get('/rooms/:id', RoomController.getState);
 
-router.post('/rooms/:id', async (req, res) => {
-  try {
-    const result = await RoomController.joinRoom(req);
-    return res.json(result);
-  } catch (error) {
-    return res.status(422).json({ error: error.message });
-  }
-});
+// join a room
+router.post('/rooms/:id', RoomController.joinRoom);
 
-router.patch('/rooms/:id', async (req, res) => {
-  try {
-    const result = await RoomController.changeStatus(req);
-    return res.json(result);
-  } catch (error) {
-    return res.status(422).json({ error: error.message });
-  }
-});
+// change room status - admin
+router.patch('/rooms/:id', RoomController.changeStatus);
 
-router.post('/rooms/:id/submissions', async (req, res) => {
-  try {
-    const result = await RoomController.submitAnswer(req);
-    return res.json(result);
-  } catch (error) {
-    return res.status(422).json({ error: error.message });
-  }
-});
+// submit a response
+router.post('/rooms/:id/submissions', RoomController.submitAnswer);
+
+// force move to next question
+router.post('/rooms/:id/force-next', RoomController.forceNextQuestion);
 
 export default router;
