@@ -6,7 +6,7 @@ module.exports = defineConfig({
   video: false,
   screenshotOnRunFailure: false,
   e2e: {
-    baseUrl: 'http://localhost:9090',
+    baseUrl: 'https://kahoots-api-ranvirdeshmukh-1.onrender.com/',
     setupNodeEvents(on, config) {
       // implement node event listeners here
     },
